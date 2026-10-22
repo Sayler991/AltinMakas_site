@@ -1,4 +1,4 @@
-(async()=>{const d=await (await fetch('data/content.json?v='+Date.now())).json();const $=i=>document.getElementById(i),e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+(async()=>{const d=await window.AM_LOAD();const $=i=>document.getElementById(i),e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 document.documentElement.style.setProperty('--heroimg',`url('${new URL(d.hero,location.href).href}')`);
 $('h-name').innerHTML=d.name_html||e(d.name);$('h-tag').textContent=d.tagline;$('h-rating').textContent=`★ ${d.rating}/5 · ${d.reviews_count} avis Google`;
 ['h-call','fab'].forEach(i=>$(i).href='tel:'+d.tel);$('h-call').textContent='📞 '+d.phone;

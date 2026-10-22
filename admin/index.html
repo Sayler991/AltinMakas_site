@@ -1,17 +1,20 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin – Altin Makas</title><meta name="robots" content="noindex">
 <style>body{font:15px system-ui;max-width:900px;margin:auto;padding:1rem;background:#f4f4f4}input,textarea{width:100%;padding:.5rem;font:inherit;margin:.2rem 0 .8rem}textarea{min-height:60px}fieldset{background:#fff;border:1px solid #ddd;margin:.6rem 0}button{padding:.7rem 1.2rem;font-weight:700;cursor:pointer}#st{font-weight:700}</style></head><body>
-<h1>Admin – Altin Makas</h1><p>Modifie <code>data/content.json</code> du dépôt <b>Sayler991/AltinMakas_site</b> via un token GitHub (droit <i>Contents: write</i>). Le token reste dans votre navigateur.</p>
-<label>Token GitHub<input id="tk" type="password" placeholder="github_pat_..."></label><button id="ld">Charger</button>
+<h1>Admin – Altin Makas</h1><div id="login"><p>Connectez-vous pour modifier le contenu du site.</p>
+<label>E-mail<input id="em" type="email" autocomplete="username"></label><label>Mot de passe<input id="pw" type="password" autocomplete="current-password"></label><button id="ld">Se connecter</button></div>
+<p id="who" hidden></p>
 <div id="f"></div><button id="sv" disabled>Enregistrer et publier</button> <span id="st"></span>
-<script>const O='Sayler991',R='AltinMakas_site',P='data/content.json',A=`https://api.github.com/repos/${O}/${R}/contents/${P}`;let sha,data;
-tk.value=localStorage.ghtk||'';const H=()=>({Authorization:'token '+tk.value,Accept:'application/vnd.github+json'});
-const b64d=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,'')))),b64e=s=>btoa(unescape(encodeURIComponent(s)));
+<script src="../assets/cms.js?v=1792702110"></script>
+<script>const S=window.AM_SB;let data,tok=sessionStorage.am_tok||'';
 function field(path,v){if(Array.isArray(v)||typeof v=='object'&&v)return `<fieldset><legend>${path}</legend>`+Object.keys(v).map(k=>field(path+'.'+k,v[k])).join('')+(Array.isArray(v)?`<button type=button onclick="addItem('${path}')">+ ajouter</button> <button type=button onclick="delItem('${path}')">− retirer dernier</button>`:'')+'</fieldset>';
- const t=String(v);return `<label>${path}<textarea data-p="${path}">${t.replace(/</g,'&lt;')}</textarea></label>`}
+ const t=String(v);return `<label>${path}<textarea data-p="${path}">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`}
 function render(){f.innerHTML=field('data',data);sv.disabled=false}
 function get(p){return p.split('.').slice(1).reduce((o,k)=>o[k],data)}
 function collect(){document.querySelectorAll('[data-p]').forEach(t=>{const ks=t.dataset.p.split('.').slice(1),last=ks.pop(),o=ks.reduce((o,k)=>o[k],data);o[last]=typeof o[last]=='number'?+t.value:t.value})}
 function addItem(p){collect();const a=get(p);a.push(JSON.parse(JSON.stringify(a[a.length-1]||'')));render()}function delItem(p){collect();get(p).pop();render()}
-ld.onclick=async()=>{localStorage.ghtk=tk.value;st.textContent='Chargement…';const r=await fetch(A+'?t='+Date.now(),{headers:H()});if(!r.ok){st.textContent='Erreur '+r.status;return}const j=await r.json();sha=j.sha;data=JSON.parse(b64d(j.content));render();st.textContent='Chargé'};
-sv.onclick=async()=>{collect();st.textContent='Publication…';const r=await fetch(A,{method:'PUT',headers:H(),body:JSON.stringify({message:'Mise à jour du contenu via admin',content:b64e(JSON.stringify(data,null,1)),sha})});const j=await r.json();if(r.ok){sha=j.content.sha;st.textContent='✔ Publié (en ligne sous 1–2 min)'}else st.textContent='Erreur : '+(j.message||r.status)};
+const RH=()=>({apikey:S.key,Authorization:'Bearer '+tok,'Accept-Profile':S.schema,'Content-Profile':S.schema,'Content-Type':'application/json'});
+async function load(){st.textContent='Chargement…';const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1&select=data',{headers:RH()});if(!r.ok){st.textContent='Erreur '+r.status;return}data=(await r.json())[0].data;render();login.hidden=true;who.hidden=false;who.innerHTML='Connecté : <b>'+(sessionStorage.am_em||'')+'</b> <button id=lo>Se déconnecter</button>';lo.onclick=()=>{sessionStorage.clear();location.reload()};st.textContent='Chargé'}
+ld.onclick=async()=>{st.textContent='Connexion…';const r=await fetch(S.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:S.key,'Content-Type':'application/json'},body:JSON.stringify({email:em.value.trim(),password:pw.value})});const j=await r.json();if(!r.ok){st.textContent='Identifiants incorrects';return}tok=j.access_token;sessionStorage.am_tok=tok;sessionStorage.am_em=j.user.email;pw.value='';load()};
+sv.onclick=async()=>{collect();st.textContent='Enregistrement…';const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1',{method:'PATCH',headers:{...RH(),Prefer:'return=representation'},body:JSON.stringify({data})});const j=await r.json().catch(()=>null);if(r.ok&&j&&j.length)st.textContent='✔ Enregistré, visible immédiatement sur le site';else if(r.status==401){st.textContent='Session expirée, reconnectez-vous';sessionStorage.clear();setTimeout(()=>location.reload(),1500)}else st.textContent='Erreur : enregistrement refusé ('+r.status+')'};
+if(tok)load();
 </script></body></html>
