@@ -1,20 +1,68 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin – Altin Makas</title><meta name="robots" content="noindex">
-<style>body{font:15px system-ui;max-width:900px;margin:auto;padding:1rem;background:#f4f4f4}input,textarea{width:100%;padding:.5rem;font:inherit;margin:.2rem 0 .8rem}textarea{min-height:60px}fieldset{background:#fff;border:1px solid #ddd;margin:.6rem 0}button{padding:.7rem 1.2rem;font-weight:700;cursor:pointer}#st{font-weight:700}</style></head><body>
-<h1>Admin – Altin Makas</h1><div id="login"><p>Connectez-vous pour modifier le contenu du site.</p>
-<label>E-mail<input id="em" type="email" autocomplete="username"></label><label>Mot de passe<input id="pw" type="password" autocomplete="current-password"></label><button id="ld">Se connecter</button></div>
-<p id="who" hidden></p>
-<div id="f"></div><button id="sv" disabled>Enregistrer et publier</button> <span id="st"></span>
-<script src="../assets/cms.js?v=1792702110"></script>
-<script>const S=window.AM_SB;let data,tok=sessionStorage.am_tok||'';
-function field(path,v){if(Array.isArray(v)||typeof v=='object'&&v)return `<fieldset><legend>${path}</legend>`+Object.keys(v).map(k=>field(path+'.'+k,v[k])).join('')+(Array.isArray(v)?`<button type=button onclick="addItem('${path}')">+ ajouter</button> <button type=button onclick="delItem('${path}')">− retirer dernier</button>`:'')+'</fieldset>';
- const t=String(v);return `<label>${path}<textarea data-p="${path}">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`}
-function render(){f.innerHTML=field('data',data);sv.disabled=false}
-function get(p){return p.split('.').slice(1).reduce((o,k)=>o[k],data)}
-function collect(){document.querySelectorAll('[data-p]').forEach(t=>{const ks=t.dataset.p.split('.').slice(1),last=ks.pop(),o=ks.reduce((o,k)=>o[k],data);o[last]=typeof o[last]=='number'?+t.value:t.value})}
-function addItem(p){collect();const a=get(p);a.push(JSON.parse(JSON.stringify(a[a.length-1]||'')));render()}function delItem(p){collect();get(p).pop();render()}
-const RH=()=>({apikey:S.key,Authorization:'Bearer '+tok,'Accept-Profile':S.schema,'Content-Profile':S.schema,'Content-Type':'application/json'});
-async function load(){st.textContent='Chargement…';const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1&select=data',{headers:RH()});if(!r.ok){st.textContent='Erreur '+r.status;return}data=(await r.json())[0].data;render();login.hidden=true;who.hidden=false;who.innerHTML='Connecté : <b>'+(sessionStorage.am_em||'')+'</b> <button id=lo>Se déconnecter</button>';lo.onclick=()=>{sessionStorage.clear();location.reload()};st.textContent='Chargé'}
-ld.onclick=async()=>{st.textContent='Connexion…';const r=await fetch(S.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:S.key,'Content-Type':'application/json'},body:JSON.stringify({email:em.value.trim(),password:pw.value})});const j=await r.json();if(!r.ok){st.textContent='Identifiants incorrects';return}tok=j.access_token;sessionStorage.am_tok=tok;sessionStorage.am_em=j.user.email;pw.value='';load()};
-sv.onclick=async()=>{collect();st.textContent='Enregistrement…';const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1',{method:'PATCH',headers:{...RH(),Prefer:'return=representation'},body:JSON.stringify({data})});const j=await r.json().catch(()=>null);if(r.ok&&j&&j.length)st.textContent='✔ Enregistré, visible immédiatement sur le site';else if(r.status==401){st.textContent='Session expirée, reconnectez-vous';sessionStorage.clear();setTimeout(()=>location.reload(),1500)}else st.textContent='Erreur : enregistrement refusé ('+r.status+')'};
-if(tok)load();
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Espace gérant – Altin Makas</title><meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1d1d1f;--card:#fff;--gold:#b8923a;--gold2:#d9b45b;--ink:#222;--mut:#6b6b6b;--line:#e5e1d8;--ok:#2e7d32;--err:#c62828}
+*{box-sizing:border-box}body{margin:0;font:16px/1.45 Lato,system-ui,sans-serif;background:#f5f3ee;color:var(--ink)}
+header{background:var(--bg);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0003}
+header h1{font:600 1.15rem Cinzel,serif;margin:0;color:var(--gold2);flex:1}header a,header button.l{color:#ddd;font-size:.9rem;background:none;border:1px solid #555;border-radius:8px;padding:6px 10px;text-decoration:none;cursor:pointer}
+main{max-width:860px;margin:0 auto;padding:18px 14px 120px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 16px;box-shadow:0 1px 3px #0000000d}
+.card h2{font:600 1.05rem Cinzel,serif;margin:0 0 4px;color:#111}.card .h{color:var(--mut);font-size:.88rem;margin:0 0 12px}
+label{display:block;font-weight:700;font-size:.9rem;margin:10px 0 4px}input,textarea{width:100%;padding:10px 12px;font:inherit;border:1px solid #cfc9bc;border-radius:9px;background:#fff}
+textarea{min-height:90px;resize:vertical}input:focus,textarea:focus{outline:2px solid var(--gold2);border-color:var(--gold)}
+.row{display:grid;gap:8px;align-items:start;padding:10px 0;border-bottom:1px dashed var(--line)}.row:last-child{border-bottom:0}
+.r2{grid-template-columns:1fr 160px auto}.r3{grid-template-columns:120px 1fr 130px auto}.rh{grid-template-columns:110px 1fr}.rs{grid-template-columns:130px 1fr auto}
+.row textarea{min-height:60px}.ctl{display:flex;gap:4px}.ctl button{border:1px solid var(--line);background:#faf8f3;border-radius:8px;width:34px;height:38px;cursor:pointer;font-size:1rem}.ctl button.x{color:var(--err)}
+.add{margin-top:10px;border:1px dashed var(--gold);background:#fffaf0;color:#6d5313;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer}
+.day{font-weight:700;padding-top:10px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;box-shadow:0 -2px 10px #0001}
+.save{background:var(--gold);color:#fff;border:0;border-radius:10px;padding:13px 26px;font-weight:700;font-size:1rem;cursor:pointer}.save:disabled{background:#bbb;cursor:default}
+#st{font-weight:700}#st.ok{color:var(--ok)}#st.err{color:var(--err)}
+.login{max-width:400px;margin:8vh auto}.login .save{width:100%;margin-top:16px}.tip{font-size:.85rem;color:var(--mut)}
+@media(max-width:620px){.r2,.r3,.rs{grid-template-columns:1fr}.ctl{justify-content:flex-end}.rh{grid-template-columns:90px 1fr}}
+</style></head><body>
+<header><h1>✂ Altin Makas · Espace gérant</h1><a href="../" target="_blank" rel="noopener">Voir le site ↗</a><button class="l" id="lo" hidden>Se déconnecter</button></header>
+<main>
+<form class="card login" id="login"><h2>Connexion</h2><p class="h">Accès réservé au gérant du salon.</p>
+<label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required>
+<label for="pw">Mot de passe</label><input id="pw" type="password" autocomplete="current-password" required>
+<button class="save" id="ld">Se connecter</button><p id="lerr" class="tip" style="color:var(--err)"></p></form>
+<div id="ed" hidden></div>
+</main>
+<div class="bar" id="bar" hidden><button class="save" id="sv" disabled>Enregistrer</button><span id="st" class="tip">Aucune modification</span></div>
+<script src="../assets/cms.js?v=1792702196"></script>
+<script>window.AM_STATS_SITE='altinmakas-admin';</script><script src="../assets/stats.js?v=1792702196" defer></script>
+<script>
+const S=window.AM_SB,$=i=>document.getElementById(i),esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+let data,sess=JSON.parse(sessionStorage.am_s||'null'),dirty=false;
+const GEN=[['tagline','Accroche (sous le nom)','i'],['about','Présentation du salon','t'],['phone','Téléphone affiché','i'],['tel','Téléphone pour le bouton « Appeler » (format +33…)','i'],['address','Adresse','i'],['city','Ville','i'],['payment','Moyens de paiement','i'],['booking','Lien de réservation en ligne (facultatif)','i'],['services_note','Remarque sous les prestations','t'],['rating','Note Google','i'],['reviews_count','Nombre d’avis Google','i']];
+const LISTS={services:{t:'Prestations & tarifs',h:'Nom de la prestation et prix (ex. « 15 € » ou « sur demande »).',c:'r2',f:[['Prestation','i'],['Prix','i']]},
+ reviews:{t:'Avis clients',h:'Prénom, texte de l’avis et ancienneté. Uniquement de vrais avis.',c:'r3',f:[['Prénom','i'],['Avis','t'],['Date','i']]},
+ social:{t:'Réseaux & liens',h:'Nom du réseau et adresse complète (https://…).',c:'rs',f:[['Nom','i'],['Lien','i']]}};
+function inp(k,v,t,a=''){return t=='t'?`<textarea ${a} data-k="${k}">${esc(v)}</textarea>`:`<input ${a} data-k="${k}" value="${esc(v)}">`}
+function render(){let h=`<section class="card"><h2>Informations générales</h2><p class="h">Ces textes apparaissent directement sur le site.</p>`+GEN.map(([k,l,t])=>`<label>${l}</label>`+inp(k,data[k],t)).join('')+`</section>`;
+ h+=`<section class="card"><h2>Horaires</h2><p class="h">Ex. « 09:00–12:00 · 14:00–19:00 » ou « Fermé ».</p>`+(data.hours||[]).map((r,i)=>`<div class="row rh"><div class="day">${esc(r[0])}</div>${inp('hours.'+i+'.1',r[1],'i')}</div>`).join('')+`</section>`;
+ for(const[k,L]of Object.entries(LISTS)){h+=`<section class="card"><h2>${L.t}</h2><p class="h">${L.h}</p>`+(data[k]||[]).map((r,i)=>`<div class="row ${L.c}">`+L.f.map((f,j)=>inp(k+'.'+i+'.'+j,r[j],f[1],`aria-label="${f[0]}" placeholder="${f[0]}"`)).join('')+`<div class="ctl"><button type=button title="Monter" onclick="mv('${k}',${i},-1)">↑</button><button type=button title="Descendre" onclick="mv('${k}',${i},1)">↓</button><button type=button class=x title="Supprimer" onclick="rm('${k}',${i})">✕</button></div></div>`).join('')+`<button type=button class="add" onclick="ad('${k}')">+ Ajouter</button></section>`}
+ $('ed').innerHTML=h;$('ed').hidden=false;$('bar').hidden=false;$('login').hidden=true;$('lo').hidden=false}
+function collect(){document.querySelectorAll('#ed [data-k]').forEach(e=>{const p=e.dataset.k.split('.');if(p.length==1)data[p[0]]=e.value;else data[p[0]][+p[1]][+p[2]]=e.value})}
+function mark(){dirty=true;$('sv').disabled=false;st('Modifications non enregistrées','')}
+function mv(k,i,d){collect();const a=data[k],j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];render();mark()}
+function rm(k,i){if(!confirm('Supprimer cette ligne ?'))return;collect();data[k].splice(i,1);render();mark()}
+function ad(k){collect();data[k].push(LISTS[k].f.map(()=>''));render();mark();const r=document.querySelectorAll('#ed [data-k^="'+k+'.'+(data[k].length-1)+'."]');r[0]&&r[0].focus()}
+function st(t,c){$('st').textContent=t;$('st').className=c||'tip'}
+document.addEventListener('input',e=>{if(e.target.closest('#ed'))mark()});
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+async function auth(body,grant){const r=await fetch(S.url+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:S.key,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw j;sess={a:j.access_token,r:j.refresh_token,e:j.user.email,x:Date.now()+(j.expires_in-60)*1e3};sessionStorage.am_s=JSON.stringify(sess)}
+async function tok(){if(sess&&Date.now()>sess.x)await auth({refresh_token:sess.r},'refresh_token');return sess.a}
+const H=async()=>({apikey:S.key,Authorization:'Bearer '+await tok(),'Accept-Profile':S.schema,'Content-Profile':S.schema,'Content-Type':'application/json'});
+async function load(){const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1&select=data',{headers:await H()});if(!r.ok)throw r.status;data=(await r.json())[0].data;render();st('Connecté : '+sess.e,'tip')}
+$('login').onsubmit=async e=>{e.preventDefault();$('lerr').textContent='';$('ld').disabled=true;$('ld').textContent='Connexion…';
+ try{await auth({email:$('em').value.trim(),password:$('pw').value},'password');$('pw').value='';window.AM_TRACK&&AM_TRACK('altinmakas-admin-login');await load()}
+ catch(x){$('lerr').textContent='E-mail ou mot de passe incorrect.'}$('ld').disabled=false;$('ld').textContent='Se connecter'};
+$('sv').onclick=async()=>{collect();$('sv').disabled=true;st('Enregistrement…','tip');
+ try{const r=await fetch(S.url+'/rest/v1/site_content?id=eq.1',{method:'PATCH',headers:{...await H(),Prefer:'return=representation'},body:JSON.stringify({data})});const j=await r.json().catch(()=>null);
+ if(r.ok&&j&&j.length){dirty=false;st('✔ Enregistré – visible immédiatement sur le site','ok')}else throw r.status}
+ catch(x){$('sv').disabled=false;st(x==401?'Session expirée : reconnectez-vous.':'Échec de l’enregistrement, réessayez.','err')}};
+$('lo').onclick=()=>{if(dirty&&!confirm('Des modifications ne sont pas enregistrées. Se déconnecter ?'))return;dirty=false;sessionStorage.removeItem('am_s');location.reload()};
+if(sess)load().catch(()=>{sessionStorage.removeItem('am_s');sess=null});
 </script></body></html>
