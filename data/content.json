@@ -1,0 +1,147 @@
+{
+ "name": "Altin Makas",
+ "tagline": "Coiffeur & Barbier · Homme · Femme · Enfant",
+ "city": "Sury-le-Comtal",
+ "address": "3 Rue Duché, 42450 Sury-le-Comtal",
+ "phone": "09 50 75 13 93",
+ "tel": "+33950751393",
+ "rating": "4,9",
+ "reviews_count": "37",
+ "about": "« Altin Makas » signifie « ciseaux d'or » en turc. Installé au 3 rue Duché à Sury-le-Comtal, le salon de Musa accueille hommes, femmes et enfants pour la coupe, la barbe et les dégradés. Les clients saluent un accueil chaleureux, un salon très propre et une équipe à l'écoute — y compris avec les plus petits.",
+ "services": [
+  [
+   "Coupe de cheveux homme",
+   "sur demande"
+  ],
+  [
+   "Taille de barbe",
+   "sur demande"
+  ],
+  [
+   "Rasage à la serviette chaude",
+   "sur demande"
+  ],
+  [
+   "Rasage de la tête",
+   "sur demande"
+  ],
+  [
+   "Coupe enfant",
+   "sur demande"
+  ],
+  [
+   "Coupe femme",
+   "sur demande"
+  ]
+ ],
+ "services_note": "Prestations listées sur Fresha et sur la devanture (Homme · Femme · Enfant). Tarifs à confirmer par téléphone.",
+ "hours": [
+  [
+   "Lundi",
+   "Fermé"
+  ],
+  [
+   "Mardi",
+   "09:00–12:00 · 14:00–19:00"
+  ],
+  [
+   "Mercredi",
+   "09:00–12:00 · 14:00–19:00"
+  ],
+  [
+   "Jeudi",
+   "09:00–12:00 · 14:00–19:00"
+  ],
+  [
+   "Vendredi",
+   "09:00–12:00 · 14:00–19:00"
+  ],
+  [
+   "Samedi",
+   "09:00–19:00"
+  ],
+  [
+   "Dimanche",
+   "Fermé"
+  ]
+ ],
+ "payment": "à confirmer",
+ "reviews": [
+  [
+   "Antho",
+   "Je viens ici depuis des années, toujours au top, les coiffeurs sont compétents et l'accueil est très bien.",
+   "il y a 2 mois"
+  ],
+  [
+   "Murat",
+   "Très bon coiffeur. Très accueillant et ainsi que bien professionnel, à l'écoute de sa clientèle, je recommande vivement. Merci Musa",
+   "il y a 11 mois"
+  ],
+  [
+   "Emma",
+   "Coupe, qualité des services et résultat au top ! Merci à Altin Makas et son équipe de couper mon fils chaque mois. Mon enfant a peur mais il se calme très vite grâce à la bienveillance des coiffeurs.",
+   "il y a 11 mois"
+  ],
+  [
+   "Jorge",
+   "Altin Makas, les Dieux de la coiffure !!! Merci Moussa pour tes loyaux services, tu fais des miracles !!!",
+   "il y a 11 mois"
+  ],
+  [
+   "D.",
+   "Parfait ! Je recommande à 100 %. Très bon coiffeur accueillant et professionnel, surtout à l'écoute. Salon très propre.",
+   "il y a 11 mois"
+  ]
+ ],
+ "social": [
+  [
+   "Facebook",
+   "https://m.facebook.com/Altin.Makas.Coiffeur.Barbier/"
+  ],
+  [
+   "Fresha",
+   "https://www.fresha.com/fr/lvp/altin-makas-rue-gambetta-sury-le-comtal-X04EQ0"
+  ]
+ ],
+ "booking": "",
+ "name_html": "Altin <span class='scis'>✂</span> Makas",
+ "hero": "img/p7.webp?v=1792700241",
+ "gallery": [
+  {
+   "lg": "img/p7.webp?v=1792700241",
+   "sm": "img/p7-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p8.webp?v=1792700241",
+   "sm": "img/p8-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p4.webp?v=1792700241",
+   "sm": "img/p4-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p2.webp?v=1792700241",
+   "sm": "img/p2-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p1.webp?v=1792700241",
+   "sm": "img/p1-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p6.webp?v=1792700241",
+   "sm": "img/p6-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p3.webp?v=1792700241",
+   "sm": "img/p3-sm.webp?v=1792700241"
+  },
+  {
+   "lg": "img/p5.webp?v=1792700241",
+   "sm": "img/p5-sm.webp?v=1792700241"
+  }
+ ],
+ "coords": [
+  45.540005,
+  4.184044
+ ]
+}
